@@ -11,12 +11,15 @@ margin:左右有用，上下没有作用。
 2.元素浮动是相对于块级元素？ 给span设置 float=right ，浮动是相对于 li 的,span浮动到了li的最右侧
 
 ```html
-*{margin: 0;padding: 0;text-decoration: none;}div{width: 160px;height: 600px;background-color: rgba(0,0,0,0.3);}li{list-style: none;padding: 15px;background-color: #BA1711;}span{float: right;}a{background-color: #00FFFF;}
+*{margin: 0;padding: 0;text-decoration: none;}
+div{width: 160px;height: 600px;background-color: rgba(0,0,0,0.3);}
+li{list-style: none;padding: 15px;background-color: #BA1711;}span{float: right;}
+a{background-color: #00FFFF;}
 <div>
     <ul>
         <li>
-            <a href="#">j
-                avascript <span> X </span>
+            <a href="#">
+                javascript <span> X </span>
             </a>
         </li>
     </ul>
@@ -24,6 +27,12 @@ margin:左右有用，上下没有作用。
 ```
 
 确实是相对于块级祖先元素来说的浮动。但是这只是特殊的，因为只有块级元素里面才能放其他元素，a标签作为一个行内元素，里面也还能添加其他元素。
+
+3.margin、padding的百分比设置是相对于谁
+
+都是相对于父元素来说，而且是相对于父元素的 **宽度**
+
+4.行内元素、行内块元素作为父元素时。有多个子元素，给其中一个子元素设置外边距，效果如何。
 
 # HTML
 
@@ -50,9 +59,21 @@ span和div都没有具语义，只是一个盒子而已。不同的是 div 是�
 <a href="1.txt">查看文本文件1.txt</a>
 <a href="test.exe">下载文件 test.exe</a>
 
-<!-- 锚点链接=》跳转到响应的 id 的元素 -->
+<!-- 锚点链接=》跳转到响应的 id 的元素 -->  
 <a href="#div1"></a>
 <div id="div1"></div>
+锚点元素默认会出现在屏幕的顶部,如果想要控制锚点元素与顶部的距离,可以设置代替元素锚点.
+1、新增一个无关元素在真正的需要锚点的元素前面
+2、隐藏无关元素、设置高度、设置顶部边距为负值以抵消
+3、给无关元素设置id
+<div className={styles.maodian} id={item.id}>工具元素</div>
+<div >真正要锚点的元素</div>
+.maodian{
+    visibility: hidden;
+    height: 80px;
+    margin-top: -80px;
+  }
+
 ```
 
 #### ul 、ol 、li
