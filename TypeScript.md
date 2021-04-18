@@ -36,6 +36,8 @@ tsc filename
 
 typescript中为了使编写的代码更规范，更有利于维护，增加了类型校验，在typescript中 主要给我们规定了变量的数据类型
 
+#### 基本数据类型
+
 1. 布尔类型( boolean)
 
    ```typescript
@@ -44,8 +46,9 @@ typescript中为了使编写的代码更规范，更有利于维护，增加了类型校验，在typescript中
 
 2. 数字类型( number)
 
-    ```typescript
+   ```typescript
    let num:number=6;//不区分 int float
+   let num:number=NaN;
    ```
 
 3. 字符串类型(string)
@@ -56,21 +59,33 @@ typescript中为了使编写的代码更规范，更有利于维护，增加了类型校验，在typescript中
 
 4. 数组类型(array)
 
-    ```typescript
-   //两种方法都可以，要求数组中类型一致
+   ```typescript
+   //两种方法都可以，要求数组中类型与指定类型一致，数组泛型可以使用联合类型指定数组的类型
    let arr:number[]=[1,2,3];
    let sarr:Array<string>=["xiamin","18","man"];
+   let arr3:Array<string|number>=[1,2,3];
    ```
 
-5. 元组类型(tuple)：*特殊的数组,数组里元素的类型可以不一样，要指定每一种的数据类型*
+5. 元组类型(tuple)：*特殊的数组,数组里元素的类型可以不一样，要指定每一种的数据类型*，就像是表示函数的参数一样。
 
-    ```typescript
+   元组类型允许表示一个**已知元素数量和类型的数组**。
+
+   **使用 ？代表可选，可选必选放在后面**
+
+   ```typescript
    let yarr:[number,string]=[22,"sisi"];
+   
+   let yarr2:[number,?string,?boolean];
+   	yarr2=[2]
+   	yarr2=[2,"2"]
+   	yarr2=[2,"2",true]
+   
+   yarr[3]="xiamin"//低版本的好像可以越界添加元素，现在会编译出错。最好也不要越界。如果确定不了数量就使用数组嘛。
    ```
 
 6. 枚举类型( enum)：
 
-   将数值语义化，比如我们经常使用的状态码，statuscode=number;200代表正确，100代表错误。光看代码很难联想到 这两个数值的语义。所以我们可以用字符串来表示数值。
+   将数值、字符串语义化，比如我们经常使用的状态码，statuscode=number;200代表正确，100代表错误。光看代码很难联想到 这两个数值的语义。所以我们可以用字符串来表示数值。
 
    ```typescript
    /*  
@@ -80,11 +95,25 @@ typescript中为了使编写的代码更规范，更有利于维护，增加了类型校验，在typescript中
    标识符[=整型常数]，
    }
    */
-   enum statu{ok=1,nook=-1};//定义一个状态码  1 表示ok   -1 表示nook
+   
+   //定义一个状态码枚举类型  200 表示 ok   404 表示 notFound
+   	enum statu{
+       	ok=200,
+       	notFound=404，
+   	};	
    //正常情况下 返回1
-   return statu.ok;
-   //不正常情况下 返回-1
-   return statu.nook;
+       return statu.ok;
+   //不正常情况下 返回404
+   	return statu.notFound;
+   
+   //定义一个状态颜色枚举
+   	enum colorEnum{
+       	primary="blue",
+       	dangerous="red",
+       	success="green"
+   	}
+   	let dangerous:colorEnum=colorEnum.dangerous;
+   	console.log(colorEnum.primary)
    
    //不进行赋值的话，值就等于索引值,如果上一个赋值了，就是上一个值 +1
    enum color{red,blue,green=5,black};//1 2 5 6
@@ -102,7 +131,9 @@ typescript中为了使编写的代码更规范，更有利于维护，增加了类型校验，在typescript中
 
 8. null和undefined
 
-    ```typescript
+   **null 和 undefined 是其他数据类型的子类型，就是说可以使用这两个给其他类型赋值**
+
+   ```typescript
    //可以和其他类型一起写
    //如果你不赋值会报错，写上空类型就不会
    let ss:null|undefined|string;
@@ -110,8 +141,10 @@ typescript中为了使编写的代码更规范，更有利于维护，增加了类型校验，在typescript中
 
 9. void类型
 
-    ```typescript
-   //有任何类型，一般用于函数没有返回值 定义函数使用，表示没有返回值
+   声明一个`void`类型的变量没有什么大用，因为你只能为它赋予`undefined`和`null`，一般用于函数的返回值。
+
+   ```typescript
+   //没有任何类型，一般用于函数没有返回值 定义函数使用，表示没有返回值
    function showss():void{
    	console.log(ss);
    };
@@ -124,6 +157,69 @@ typescript中为了使编写的代码更规范，更有利于维护，增加了类型校验，在typescript中
     ```typescript
     //一般用在不知道会是什么类型的情况，比如抛出异常的返回值之类，很少有函数
     ```
+
+11. 未指定类型
+
+    定义变量时没有指定数据类型，也没有初始化，默认为 any。
+
+    ```typescript
+    let any;	// 	let any:any;
+    ```
+
+    定义变量时未指定数据类型，但是进行了初始化操作，默认为初始化时的数据类型。
+
+    ```typescript
+    let name="xiamin";	//	let name:string='xiamin'
+    ```
+
+#### 非基本数据类型 --对象
+
+**object** 类型，就是我们所熟悉的对象，不是基本数据类型。
+
+```tsx
+let person:object={
+    name:'xiaMin'
+}
+console.log(person)
+```
+
+如果想要约束对象属性的数据类型，则可以使用接口。
+
+#### 类型断言
+
+有时候你会遇到这样的情况，你会比TypeScript更了解某个值的详细信息。 通常这会发生在你清楚地知道一个实体具有比它现有类型更确切的类型。
+
+通过*类型断言*这种方式可以告诉编译器，“**相信我，我知道自己在干什么**”。 类型断言好比其它语言里的类型转换，但是不进行特殊的数据检查和解构。 它没有运行时的影响，只是在编译阶段起作用。 TypeScript会假设你，程序员，已经进行了必须的检查。
+
+类型断言有两种形式。 其一是“尖括号”语法：
+
+```typescript
+let obj:string|number;
+
+fun=():string|number=>{return  "13"}
+
+obj=fun();
+
+//此时编译的时候 tsc 不知道 obj 是 string 还是 number ，length不是两种类型的数据共有的数据，所以编译会报错 
+//console.log(obj.length)
+
+//使用断言
+console.log((<string>obj).length)
+```
+
+另一个为`as`语法：
+
+```typescript
+let obj:string|number;
+
+fun=():string|number=>{return  "13"}
+
+obj=fun();//此时编译的时候 tsc 不知道 obj 是 string 还是 number ，length不是两种类型的数据共有的数据，所以编译会报错  
+
+console.log( (obj as string).length )
+```
+
+两种形式是等价的。 至于使用哪个大多数情况下是凭个人喜好；然而，**当你在TypeScript里使用JSX时，只有`as`语法断言是被允许的**。
 
 ### 函数
 
@@ -355,6 +451,39 @@ function showFullName(name:FullName):void{
     console.log(`fullname:${name.firstName}${name.lastName}`);
 }
 showFullName(myname);
+```
+
+###### 只读属性
+
+如果你定义的某个对象，有些属性，只能在初始化时进行赋值，不能进行修改，我们可以设置属性为只读属性。
+
+比如某个对象的其他属性都可以进行修改，只有 id 唯一标识不能进行修改。
+
+```typescript
+interface FullName{
+    firstName:string;
+    lastName:string;
+    smallName?:string;
+    readonly  id:string; //使用 readonly标识为只读
+};
+```
+
+TypeScript具有`ReadonlyArray<T>`类型，它与`Array<T>`相似**，只是把所有可变方法去掉了**，因此可以确保数组创建后再也不能被修改：
+
+```
+
+let a: number[] = [1, 2, 3, 4];
+let ro: ReadonlyArray<number> = a;
+ro[0] = 12; // error!
+ro.push(5); // error!
+ro.length = 100; // error!
+a = ro; // error!
+```
+
+上面代码的最后一行，可以看到就算把整个`ReadonlyArray`赋值到一个普通数组也是不可以的。 但是你可以用类型断言重写：                
+
+```
+a = ro as number[];
 ```
 
 ##### 函数类型的接口

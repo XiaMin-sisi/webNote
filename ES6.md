@@ -1,9 +1,64 @@
 ### 变量的定义
 
-1. let:定义变量，没有预解析，不存在变量提升，不能重复定义变量
-2. const：定义常量，声明的时候就必须得赋值。后续不能改变值（此特性对于对象属性的操作不适用，如数组的push()方法添加数组的数据，对象有一个函数freeze(）使对象不能改变）
-3. 使用以上两种方法定义的变量作用域增加了块级作用域  {}
-注意：var 定义的变量属于window而let和const不是
+1. let
+
+   let定义变量，没有预解析，不存在变量提升，不能在相同的块中重复定义变量
+
+2. const
+
+   定义常量，声明的时候就必须得赋值。后续不能改变值（此特性对于对象属性的操作不适用，如数组的push()方法添加数组的数据，对象有一个函数freeze(）使对象不能改变）
+
+3. var
+
+  使用以上两种方法定义的变量作用域增加了块级作用域  {}
+
+  **作用域规则**
+
+  `var`声明可以在包含它的函数，模块，命名空间或全局作用域内部任何位置被访问，如下
+
+  ```js
+  function f() {
+  	if (true) {
+  		 var x = 10;
+  	}
+  	console.log(x)
+  }
+  
+  f();//10
+  ```
+
+  **捕获变量**
+
+  传给`setTimeout`的每一个函数表达式实际上都引用了相同作用域里的同一个`i`。
+
+  ```js
+  for (var i = 0; i < 10; i++) {
+      setTimeout(function() { console.log(i); }, 100 * i);
+  }
+  // 10 10 10 ....
+  
+  ```
+
+即使捕获到的变量所在的会计作用域已经消失，也可以继续使用该变量。
+
+```ts
+function theCityThatAlwaysSleeps() {
+    let getCity;
+
+    if (true) {
+        let city = "Seattle";
+        getCity = function() {
+            return city;
+        }
+    }
+
+    return getCity();
+}
+```
+
+**重定义**
+
+使用 var 定义多个相同的变量，其实都是同一个变量的引用。
 
 ---
 ### 解构赋值
@@ -11,14 +66,17 @@
 **非常有用特别是在做数据交换的东西**
 
 ```javascript
-	  //把数组、json中的值赋值给变量
-	  let [a,b,c]=[12,56,65]	
+//把数组、对象中的值赋值给变量
+	  let [a,b,c]=[12,56,65]	//let a=12,b=56,c=65
 	  let json={name:"xiamin",age:21};
-	  let {name,age}=json;
-	 //当你先定义好变量，再解构赋值json给该变量
+	  let {name,age}=json;		//let name=json.name,age=json.age
+//当你先定义好变量，再解构赋值json给该变量 
       let a,b;
-      ({a,b}={a:"xiamin",b:"18"};)
 	//当你写{}时,可能会被当作块级作用域语法，此时如果你不想{}当作块级作用域可以用小括号包围该语句 
+      ({a,b}={a:"xiamin",b:"18"};) //a={}.a ; b={}.b
+//结构对象时重命名属性
+	let obj={a:"xiamin",b:18};
+	let {a:name,b:age}=obj;	// let name=obj.a,let age=obj.b; 
 ```
 
 ---

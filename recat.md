@@ -74,9 +74,9 @@ render() {
 
 二、使用脚手架安装React项目
 
-```javascript
+```bash
 --安装全局脚手架
-npm install-g create-react-app
+npm install -g create-react-app
 --创建项目
 npx create-react-app projectName
 --或者
