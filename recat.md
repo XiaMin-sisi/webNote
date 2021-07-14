@@ -382,6 +382,23 @@ XiaojiejieItem.defaultProps = {
 }
 ```
 
+# 特殊的属性
+
+props中有一个特殊的属性 children。这个属性代表的就是子元素的标签体内容。
+
+```jsx
+<Child>child</Child> // 也可以这样 <Child children="child" />
+
+let Child=(props)=>{
+    console.log(props);
+    return (
+        <div {...props}/>//渲染出来就是 <div children="child" /> 最终的渲染就是 <div>child</div>
+    )
+}
+```
+
+
+
 # state
 
 state 就是组件的私有属性。在构造函数中进行初始化。更新 state 可以达到更新视图的效果。
@@ -495,7 +512,7 @@ inputChange(){
 Refs 是使用 `React.createRef()` 创建的，并通过 `ref` 属性附加到 React 元素。在构造组件时，通常将 Refs 分配给实例属性，以便可以在整个组件中引用它们。
 
 ```js
-class MyComponent extends React.Component {
+class MyComponent extends React.Component {m
   constructor(props) {
     super(props);
     this.myRef = React.createRef();  //创建 refs
@@ -579,7 +596,7 @@ componentWillMount()一般用的比较少，它更多的是在服务端渲染时
 <div>
 	<com></com>
 	<com></com>
-	<com></com>
+	<com>671263113</com>
 </div>    
 ```
 
@@ -675,10 +692,36 @@ render函数会插入jsx生成的dom结构，react会生成一份虚拟dom树。
 
 ## React新增的生命周期
 
-### 3.1. getDerivedStateFromProps(nextProps, prevState)
+挂载阶段：
+
+constructor(props) - 初始化state和为事件处理函数绑定实例；
+
+static **getDerivedStateFromProps(nextProps, prevState)**  当state的值在任何时候都取决于props时使用，返回一个对象来更新state，返回null则不更新state；
+
+render() - 渲染React组件；
+
+componentDidMount() - 组件挂载后调用，一个生命周期内仅一次；
+
+更新阶段：
+
+static  **getDerivedStateFromProps(nextProps, prevState)**
+
+shouldComponentUpdate(nextProps, nextState) - 根据更新后的state或props判断是否重新渲染DOM，返回值为布尔值，常用来性能优化；
+
+render();
+
+**getSnapshotBeforeUpdate(prevProps, prevState)** - 是的组件能在发生改变之前从DOM中捕获一些信息（如滚动位置），返回值作为componentDidUpdate的第三个参数；
+
+componentDidUpdate(prevProps, prevState, **snapshot**) - state或props更新后调用
+
+卸载阶段
+
+componentWillUnmount() - 组件销毁或卸载时调用；
+
+### getDerivedStateFromProps(nextProps, prevState)；
 
 代替componentWillReceiveProps()。
-老版本中的componentWillReceiveProps()方法判断前后两个 props 是否相同，如果不同再将新的 props 更新到相应的 state 上去。这样做一来会破坏 state 数据的单一数据源，导致组件状态变得不可预测，另一方面也会增加组件的重绘次数。应该声明为  static **类的静态成员函数**。
+老版本中的componentWillReceiveProps()方法判断前后两个 props 是否相同，如果不同再将新的 props 更新到相应的 state 上去。这样做一来会破坏 state 数据的单一数据源，导致组件状态变得不可预测，另一方面也会增加组件的重绘次数。应该声明为  static **类的静态成员函数**。**返回一个对象作为新的state**,返回null则说明不需要更新state,配合componentDidUpdate，可以覆盖componentWillReceiveProps的所有用法
 
 ```javascript
 // before
@@ -699,7 +742,7 @@ static getDerivedStateFromProps(nextProps, prevState) {
     //也就是说这里也不能改变 state 值，只能放到下一个生命周期 componentDidUpdate 中更新
   if (nextProps.isLogin !== prevState.isLogin) {
     return {
-      isLogin: nextProps.isLogin,
+      isLogin: nextProps.isLogin,//不一样，所以要更新state，返回值就是新的 state
     };
   }
   return null;
@@ -718,7 +761,7 @@ componentDidUpdate(prevProps, prevState) {
 1. 在老版本的 React 中，这两件事我们都需要在 componentWillReceiveProps 中去做。
 2. 而在新版本中，官方将更新 state 与触发回调重新分配到了 getDerivedStateFromProps 与 componentDidUpdate 中，使得组件整体的更新逻辑更为清晰。**而且在 getDerivedStateFromProps 中还禁止了组件去访问 this.props，强制让开发者去比较 nextProps 与 prevState** 中的值，以确保当开发者用到 getDerivedStateFromProps 这个生命周期函数时，就是在根据当前的 props 来更新组件的 state，而不是去做其他一些让组件自身状态变得更加不可预测的事情。
 
-### 3.2. getSnapshotBeforeUpdate(prevProps, prevState)
+### getSnapshotBeforeUpdate(prevProps, prevState)
 
 代替componentWillUpdate。 常见的 componentWillUpdate 的用例是在组件更新前，读取当前某个 DOM 元素的状态，并在 componentDidUpdate 中进行相应的处理。
  这两者的区别在于：
@@ -726,7 +769,7 @@ componentDidUpdate(prevProps, prevState) {
 1. 在 React 开启异步渲染模式后，在 render 阶段读取到的 DOM 元素状态并不总是和 commit 阶段相同，这就导致在
     componentDidUpdate 中使用 componentWillUpdate 中读取到的 DOM 元素状态是不安全的，因为这时的值很有可能已经失效了。
 2. getSnapshotBeforeUpdate 会在最终的 render 之前被调用，也就是说在 getSnapshotBeforeUpdate 中读取到的 DOM 元素状态是可以保证与 componentDidUpdate 中一致的。
-    此生命周期返回的任何值都将作为参数传递给componentDidUpdate（）。
+    **此生命周期返回的任何值都将作为参数传递给componentDidUpdate（）。**
 
 # 事件处理
 
@@ -1062,7 +1105,7 @@ render(){
 </ChildrenCom>
 ```
 
-# 路由
+# 路由 
 
 要始终清楚的认识到 路由切换的不是页面 是组件，**控制某块区域组件的切换**。并不是切换页面。
 
@@ -1077,7 +1120,7 @@ npm install react-router-dom --save
 ```react
 //react 路由分为 hash 模式 和 history 模式
 //1、 hash 模式需要的路由模块 # hash值的变化不会导致页面请求
-import {HashRouter as Router,Link,Route} from 'react-router-dom'
+import {HashRouter as Router,Link,Route,NavLink} from 'react-router-dom'
 //2、 history 需要用到的路由模块 / 和后端配合使用，即使是 / 后面的路径发生改变也不会发送请求
 import {BrowserRouter as Router,Link,Route} from 'react-router-dom'
 ```
@@ -1086,8 +1129,6 @@ import {BrowserRouter as Router,Link,Route} from 'react-router-dom'
 
 感觉 react 的路由很不方便和 vue 相比。路由链接 Link 和路由模块 Route 都必须写在同一个 根 Router 下。
 
-如果路由组件 还有 子路由，就必须自己再写一个 Router ,否则就会被父组件的 Router 包括，改变的就是父组件的路由地址。
-
 ```react
 //basename 即 基本路径 、默认根路径。会自动加到 Link 、Route 的路由路径上
 //Router 不会转化成 html 元素。渲染到页面中就消失了。Router 中可以写入除了路由外的其他元素，可以正常显示。
@@ -1095,10 +1136,13 @@ import {BrowserRouter as Router,Link,Route} from 'react-router-dom'
     <div>
         {/*路由链接 Link 默认被渲染成一个 a 标签。 to 属性对应着 route 的 path*/}
         <Link to="/">首页</Link> <br/>
-        {/* 默认地址的切换是一个追加操作， replace 代表的是替换，会把前一个路由地址在历史记录中删除，就是不能再回退到前一个页面 */}
+ {/* 默认地址的切换是一个追加操作， replace 代表的是替换，会把前一个路由地址在历史记录中删除，就是不能再回退到前一个页面 */}
         <Link to="/self" replace >个人中心</Link><br/>
         <Link to="/study">学习中心</Link><br/>
-        
+        {/* NavLink 和 Link 的区别是NavLink可以指定路由选中时链接的样式*/}
+        <NavLink activeClassName='active' to="/onePage">第1个页面</NavLink >
+        <NavLink activeClassName='active' to="/towPage">第2个页面</NavLink >
+        <NavLink activeClassName='active' to="/threePage">第3个页面</NavLink >
     </div>
     <br/>
     其他东西 
@@ -1191,6 +1235,7 @@ let Islogin =(props)=>{
   else
   return <Redirect to="/error"></Redirect>
 }
+//还一个作用就是当整个路由区域没有与当前路径匹配的路由时，就会匹配重定向路由的路径。
 ```
 
 ## history 重定向

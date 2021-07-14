@@ -70,7 +70,7 @@ typescript中为了使编写的代码更规范，更有利于维护，增加了类型校验，在typescript中
 
    元组类型允许表示一个**已知元素数量和类型的数组**。
 
-   **使用 ？代表可选，可选必选放在后面**
+   **使用 ？代表可选，可选必须放在后面**
 
    ```typescript
    let yarr:[number,string]=[22,"sisi"];
@@ -427,6 +427,8 @@ sl1.saysomething();
 
 ##### 属性接口
 
+**属性接口，规定了的属性一定要有，没有规定的一定不要有。可以用可选属性**
+
 就是规定了数据类型的 json。比如 定义个 名字的数据类型，由 姓  名 两部分组成，两部分都是 string类型
 
 ```typescript
@@ -446,12 +448,41 @@ let myname:FullName={
 		firstName:"夏",
 		lastName:"敏"
 	}
-//用属性接口 当作函数的参数。 就是函数的参数 类型是 FullName 呗
+//用属性接口 当作函数的参数。 就是函数的参数类型是 FullName，
 function showFullName(name:FullName):void{
     console.log(`fullname:${name.firstName}${name.lastName}`);
 }
 showFullName(myname);
 ```
+
+###### 函数参数
+
+用属性接口做函数的参数时，如果函数的参数有不包括接口在内的属性。可以使用类型**断言**或者**变量赋值**绕过额外属性检查,**索引签名**
+
+```typescript
+interface fullName{
+    firstName:string,
+    secondName:string,
+};
+function showFullName2(nameMes:fullName):void{
+    console.log(nameMes.firstName+nameMes.secondName);
+};
+//error 检测到额外属性
+showFullName2({firstName:"Xia",secondName:"Min",smallName:"SiSi"})
+//使用断言
+showFullName2({firstName:"Xia",secondName:"Min",smallName:"SiSi"} as fullName)
+//变量赋值绕过检查
+let nameMes2={firstName:"Xia",secondName:"Min",smallName:"SiSi"};
+showFullName2(nameMes2);
+//索引签名--就是属性名字不确定
+interface fullName{
+    firstName:string,
+    secondName:string,
+    [propName: string]: any;
+};
+```
+
+
 
 ###### 只读属性
 
@@ -504,20 +535,30 @@ let fun1:infn=function(name:string,age:number):string{
 
 ##### 索引接口
 
+只规定属性的索引和属性值的类型，**不规定数量**。
+
+支持两种索引：
+
+数字索引：就是数组
+
+字符索引：就是对象
+
 规定数组、对象的key和value的数据类型，第一个属性接口，是规定 key的名字，和value的类型，不一样。
 
 ```typescript
-interface myarr{
-	//约定了数组索引值(key)是数值类型，value是字符类型。但是吧，数组的索引可以是其他类型吗？
-	[myindex:number]:string
+interface person{
+    [personIndex:string]:string
 }
-let arr:myarr=["hello","xiamin"];
+let xiaMin:person={name:"xiaMin",age:"18"};
 
-interface myarr{
-	//约定了对象索引值(key)是string类型，value是字符类型。但是吧，对象的索引可以是其他类型吗？
-	[myindex:string]:string
+interface myArr{
+    [index:number]:string
 }
-let arr:myarr={name:"xiamin"};
+let arr:myArr=["s","s","s"];
+let arr2:myArr={
+    1:"s",
+    2:"s"
+}
 ```
 
 #### 类接口
@@ -535,7 +576,9 @@ interface animal{
 
 ##### 类接口的实现
 
-使用关键字 implements 进行实现，接口中有的必须按照规范进行实现，也可以添加自己的属性方法。
+接口描述了类的公共部分。
+
+使用关键字 implements 进行实现，接口中有的必须按照规范进行实现，**也可以添加自己的属性方法**。
 
 ```typescript
 class dog implements animal{
