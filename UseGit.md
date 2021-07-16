@@ -63,3 +63,33 @@ git merge #issue-描述
 git push origin master
 ```
 
+## 单纯合并commit
+
+1. 查看需要合并哪几个分支
+
+```bash
+git log
+```
+
+​	复制主要合并的第一个commit的前一个commitID(就是第一个不需要合并的commitID)
+
+2. 合并分支
+
+```bash
+git rebase -i commitID
+```
+
+3. 将pick除了第一个都改成sqush,保存文件、关闭文件
+4. 此时合并可能会出现冲突，解决完冲突（不知道要不要add这些改变）然后继续rebase
+
+```bash
+git rebase --continue
+```
+
+	5. 修改合并提交的描述，保存文件、关闭文件。如果还有冲突重复第四步。直到成功。
+ 	6. 强制推送到远程，如果最后合并的代码没有什么问题了，就推送到远程分支，此时是推不上去的，会有冲突，但是我们可以强制推送
+
+```bash
+git push -f origin branchName
+```
+

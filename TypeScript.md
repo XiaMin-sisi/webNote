@@ -427,7 +427,7 @@ sl1.saysomething();
 
 ##### 属性接口
 
-**属性接口，规定了的属性一定要有，没有规定的一定不要有。可以用可选属性**
+**属性接口，规定了的属性一定要有，没有规定的一定不一定要有。可以用可选属性**
 
 就是规定了数据类型的 json。比如 定义个 名字的数据类型，由 姓  名 两部分组成，两部分都是 string类型
 
@@ -453,6 +453,30 @@ function showFullName(name:FullName):void{
     console.log(`fullname:${name.firstName}${name.lastName}`);
 }
 showFullName(myname);
+```
+
+添加任意可选的属性
+
+```ts
+interface stu {
+    name:string,
+    [keyName:string]:any
+}
+let student:stu={
+    name:'xiamin',
+    age:12,
+    money:78
+}
+或者
+type stu ={
+    name:string,
+    [keyName:string]:any
+}
+let student:stu={
+    name:'xiamin',
+    age:12,
+    money:78
+}
 ```
 
 ###### 函数参数
